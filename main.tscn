@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://3rxmeougth3y"]
+
+[ext_resource type="Script" uid="uid://c7hmu2j6auou4" path="res://sim_manager.gd" id="2_h2yge"]
+
+[node name="main" type="Node2D"]
+
+[node name="TokenContainer" type="Node2D" parent="."]
+
+[node name="OreContainer" type="Node2D" parent="TokenContainer"]
+
+[node name="ItemContainer" type="Node2D" parent="TokenContainer"]
+
+[node name="SimManager" type="Node2D" parent="."]
+script = ExtResource("2_h2yge")

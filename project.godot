@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="factory-game"
+run/main_scene="uid://3rxmeougth3y"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
 
 [rendering]
 
