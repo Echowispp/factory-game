@@ -1,19 +1,32 @@
 extends Node2D
 
-
-
 var all_tokens: Array[Token] = [];
 var all_factories: Array[Factory] = [];
 
+var grid: TileMapLayer = null
+
+var paused:bool = false;
+var tickrate: float = 1.0; #basically how fast the sim runs
+
+var tick_timer = 0.0; #Used so tickrate can be controlled
+
+signal tick_completed(tick: int);
+signal factory_started
 
 #func _ready() -> void:
 	#pass
+func _process(delta: float) -> void:
+	
+	if paused:
+		return;
+	
+	tick_timer += delta;
+	
+	while tick_timer >= tickrate:
+		tick_timer -= tickrate;
+		_sim_tick();
 
-
-#func _process(delta: float) -> void:
-	#pass
-
-func sim_tick():
+func _sim_tick():
 	_move_tokens();
 	_process_factories();
 	_get_outputs();
