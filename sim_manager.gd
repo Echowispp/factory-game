@@ -12,7 +12,6 @@ var tick_timer = 0.0; #Used so tickrate can be controlled
 
 signal tick_completed(tick: int);
 signal factory_started
-
 #func _ready() -> void:
 	#pass
 func _process(delta: float) -> void:
@@ -32,10 +31,16 @@ func _sim_tick():
 	_get_outputs();
 
 func add_token(token: Token):
-	all_tokens.append(token)
+	all_tokens.append(token);
 
 func remove_token(token: Token):
-	all_tokens.erase(token)
+	all_tokens.erase(token);
+
+func add_factory(factory: Factory):
+	all_factories.append(factory);
+
+func remove_factory(factory: Factory):
+	all_factories.erase(factory);
 
 func _move_tokens():
 	pass;

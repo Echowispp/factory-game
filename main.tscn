@@ -12,3 +12,5 @@
 
 [node name="SimManager" type="Node2D" parent="."]
 script = ExtResource("2_h2yge")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
