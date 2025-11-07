@@ -7,3 +7,4 @@ Already forgot to do this for a couple commits, but that... will surely be fine.
 At the moment, I'm looking to do the functions inside sim_tick, starting with move_tokens. 
 I'll likely end up using loops for them, basically checking how far each individual token has to move, 
 then moving it. Btw I hope these "devlogs" (no idea what else to call them) will help with reviewing. 
+And tokens represent resoruces, forgot to mention that earlier
