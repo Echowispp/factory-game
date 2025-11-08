@@ -33,16 +33,16 @@ func _sim_tick():
 	_process_factories();
 	_get_outputs();
 
-func add_token(token: Token):
+func _add_token(token: Token):
 	all_tokens.append(token);
 
-func remove_token(token: Token):
+func _remove_token(token: Token):
 	all_tokens.erase(token);
 
-func add_factory(factory: Factory):
+func _add_factory(factory: Factory):
 	all_factories.append(factory);
 
-func remove_factory(factory: Factory):
+func _remove_factory(factory: Factory):
 	all_factories.erase(factory);
 
 func _move_tokens():
@@ -52,58 +52,100 @@ func _move_tokens():
 		if token.target == Vector2i(-1, -1):
 			continue;
 		
-		if is_tile_empty(token.target):
+		if _is_tile_empty(token.target):
 			token.grid_pos = token.target;
 			token.target = token.get_next_target();
 		
-		elif is_factory_input(token.target):
-			var factory = get_factory_at_input(token.target)
-			var input_id = get_input_id(token.target, factory)
-			if factory and input_id in factory.input_buffers:
-				factory.input_buffers[input_id].append(token);
-				remove_token(token);
+		elif _is_factory_input(token.target):
+			var factory = _get_factory_at_input(token.target)
+			var input_id = _get_input_id(token.target, factory)
+			if factory and input_id in factory.input_buffer:
+				factory.input_buffer[input_id].append(token);
+				_remove_token(token);
 				token.queue_free();
 				token_consumed.emit(token, factory)
 
 func _process_factories():
-	pass;
+	for factory in all_factories:
+		if factory.progress == 0:
+			if can_start_recipe(factory):
+				consume_inputs(factory);
+				factory.progress = factory.recipe.time;
+				factory_started.emit(factory)
+		if factory.progress > 0:
+			factory.progress -= 1
+			
+			if factory.progress == 0:
+				for item in factory.recipe.outputs:
+					for i in range(factory.recipe.outputs[item]):
+						factory.output_buffer.append({"item": item})
+				
+				if "byproduct" in factory.recipe:
+					factory.byproducts += 1;
+					var freq = factory.recipe.get("byproduct_rate", 1);
+					if factory.byproducts >= freq:
+						factory.byproducts = 0;
+						factory.output_buffer.append({
+							"item_type": factory.recipe.byproduct
+						})
 
 func _get_outputs():
 	pass;
 
 
-func is_tile_empty(pos: Vector2i) -> bool:
+func _is_tile_empty(pos: Vector2i) -> bool:
 	for token in all_tokens:
 		if token.grid_pos == pos:
 			return true;
 	return false;
 
-func is_factory_input(pos: Vector2i) -> bool:
+func _is_factory_input(pos: Vector2i) -> bool:
 	for factory in all_factories:
 		for input_pos in factory.get_inputs():
 			if input_pos == pos:
 				return true;
 	return false;
 
-func get_factory_at_input(pos: Vector2i) -> Factory:
+func _get_factory_at_input(pos: Vector2i) -> Factory:
 	for factory in all_factories:
 		for input_pos in factory:
 			if input_pos == pos:
 				return factory;
 	return null;
 
-func get_input_id(pos: Vector2i, factory: Factory) -> String:
+func _get_input_id(pos: Vector2i, factory: Factory) -> String:
 	var inputs = factory.get_inputs();
 	for i in range(inputs.size()):
 		if inputs[i] == pos:
 			return factory.recipe.inputs.keys();
 	return "";
 
-func get_next_tile(pos: Vector2i) -> Vector2i:
+func _get_next_target(pos: Vector2i) -> Vector2i:
 	if not grid:
 		return Vector2i(-1, -1);
 	var tile_data = grid.get_cell_custom_data();
 	
 	#match direction
 	# I'll add these later, once I know what I'm going to call the direction outputs, also I kinda want a break
-	return Vector2i(-1, -1)
+	return Vector2i(-1, -1);
+
+func can_start_recipe(factory: Factory) -> bool:
+	if factory.recipe.is_empty():
+		return false;
+	
+	for input_id in factory.recipe.inputs:
+		var required_inputs = factory.recipe.inputs[input_id];
+		var available_inputs = factory.input_buffer.get([input_id], []).size();
+		 
+		if available_inputs > required_inputs.count:
+			return false
+		
+		if factory.output_buffer.size() >= factory.max_buffer_size:
+			return false;
+	return true;
+
+func consume_inputs(factory: Factory):
+	for input_id in factory.recipe.inputs:
+		var required = factory.recipe.inputs[input_id];
+		for i in range(required.count):
+			factory.input_buffer[input_id].pop_front();
