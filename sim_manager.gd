@@ -12,12 +12,14 @@ var tickrate: float = 1.0; #basically how fast the sim runs
 
 var tick_timer = 0.0; #Used so tickrate can be controlled
 
-signal tick_completed(tick: int);
+#signal tick_completed(tick: int);
 signal factory_started
 signal token_consumed
-#func _ready() -> void:
+
+#func _ready():
 	#pass
-func _process(delta: float) -> void:
+
+func _process(delta: float):
 	
 	if paused:
 		return;
@@ -31,15 +33,15 @@ func _process(delta: float) -> void:
 func _sim_tick():
 	_move_tokens();
 	_process_factories();
-	_get_outputs();
+	_do_outputs();
 
-func _add_token(token: Token):
+func _register_token(token: Token):
 	all_tokens.append(token);
 
 func _remove_token(token: Token):
 	all_tokens.erase(token);
 
-func _add_factory(factory: Factory):
+func _register_factory(factory: Factory):
 	all_factories.append(factory);
 
 func _remove_factory(factory: Factory):
@@ -89,8 +91,14 @@ func _process_factories():
 							"item_type": factory.recipe.byproduct
 						})
 
-func _get_outputs():
-	pass;
+func _do_outputs():
+	for factory in all_factories:
+		if factory.output_buffer.is_empty():
+			continue
+		
+		if _is_tile_empty(factory.output):
+			var token_data = factory.output_buffer.pop_front();
+			_spawn_token(token_data.item, factory.output);
 
 
 func _is_tile_empty(pos: Vector2i) -> bool:
@@ -149,3 +157,16 @@ func consume_inputs(factory: Factory):
 		var required = factory.recipe.inputs[input_id];
 		for i in range(required.count):
 			factory.input_buffer[input_id].pop_front();
+
+func _spawn_token(item_type: String, pos: Vector2i) -> Token:
+	var token = Token.new()
+	token.target = _get_next_target(pos)
+	
+	# Position in world space
+	if grid:
+		token.global_position = grid.map_to_local(pos)
+	
+	_register_token(token)
+	add_child(token)
+	
+	return token

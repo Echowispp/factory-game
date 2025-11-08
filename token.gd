@@ -11,6 +11,3 @@ func _ready() -> void:
 	add_child(sprite);
 	sprite.texture = PlaceholderTexture2D
 	#actual sprite to be added
-
-#func _process(delta: float) -> void:
-	#pass

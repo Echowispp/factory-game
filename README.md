@@ -10,3 +10,4 @@ then moving it. Btw I hope these "devlogs" (no idea what else to call them) will
 And tokens represent resources, forgot to mention that earlier
 
 Now, I'll do process_factories next, probably going to do a similar model with a loop for each individual factory
+Same again with _do_outputs().
