@@ -16,6 +16,7 @@ func _ready() -> void:
 	var mined_resource_type = _check_mined_tile();
 	
 	active_recipe = {
+		"inputs": {}, 
 		"outputs": {
 			mined_resource_type: 1, 
 		},

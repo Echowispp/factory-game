@@ -1,13 +1,10 @@
 extends Control
 
 
+
 @onready var sim_manager = $"../../SimManager";
 
-@onready var conveyor_r_button = $HBoxContainer/ConveyorButtonR;
-@onready var conveyor_l_button = $HBoxContainer/ConveyorButtonL;
-@onready var conveyor_u_button = $HBoxContainer/ConveyorButtonU;
-@onready var conveyor_d_button = $HBoxContainer/ConveyorButtonD;
-
+@onready var conveyor_button = $HBoxContainer/ConveyorButton;
 @onready var miner_button = $HBoxContainer/MinerButton;
 @onready var smelter_button = $HBoxContainer/SmelterButton;
 @onready var foundry_button = $HBoxContainer/FoundryButton;
@@ -16,27 +13,18 @@ extends Control
 
 
 func _ready():
-	conveyor_r_button.pressed.connect(_conv_r);
-	conveyor_l_button.pressed.connect(_conv_l);
-	conveyor_u_button.pressed.connect(_conv_u);
-	conveyor_d_button.pressed.connect(_conv_d);
-	
+	conveyor_button.pressed.connect(_conveyor);
 	miner_button.pressed.connect(_miner)
+	smelter_button.pressed.connect(_smelter)
+	foundry_button.pressed.connect(_foundry)
+	constructor_button.pressed.connect(_constructor)
+	manufacturer_button.pressed.connect(_manufacturer)
 
 
-func _conv_r():
-	sim_manager.selected_building = "conveyor_right";
+func _conveyor():
+	sim_manager.selected_building = "conveyor_belt";
 	sim_manager.create_building_preview()
-func _conv_l():
-	sim_manager.selected_building = "conveyor_left";
-	sim_manager.create_building_preview()
-func _conv_u():
-	sim_manager.selected_building = "conveyor_up";
-	sim_manager.create_building_preview()
-func _conv_d():
-	sim_manager.selected_building = "conveyor_down";
-	sim_manager.create_building_preview()
-
+	print("_conveyor called")
 func _miner():
 	sim_manager.selected_building = "miner";
 	sim_manager.create_building_preview()
