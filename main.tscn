@@ -1,16 +1,201 @@
-[gd_scene load_steps=2 format=3 uid="uid://3rxmeougth3y"]
+[gd_scene load_steps=20 format=3 uid="uid://3rxmeougth3y"]
 
+[ext_resource type="Script" uid="uid://cje6b088d1emy" path="res://camera.gd" id="2_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://dqvb72w0bwy58" path="res://images/tiles.png" id="2_1bvp3"]
 [ext_resource type="Script" uid="uid://c7hmu2j6auou4" path="res://sim_manager.gd" id="2_h2yge"]
+[ext_resource type="Texture2D" uid="uid://b6enync7xw1qy" path="res://images/conveyor.png" id="3_lquwl"]
+[ext_resource type="Texture2D" uid="uid://bytr6f3qmsogc" path="res://images/constructor.png" id="4_4c57u"]
+[ext_resource type="Script" uid="uid://lye0hc7lsukb" path="res://build_menu.gd" id="5_7mycd"]
+[ext_resource type="Texture2D" uid="uid://thvf34o868c" path="res://images/foundry.png" id="5_efxa6"]
+[ext_resource type="Texture2D" uid="uid://bvwxb8q0aocqi" path="res://images/manufacturer.png" id="6_dg77c"]
+[ext_resource type="Texture2D" uid="uid://rsonlvlqila6" path="res://images/miner.png" id="7_ycdy4"]
+[ext_resource type="Texture2D" uid="uid://itcsoc3shbuq" path="res://images/smelter.png" id="8_w48qg"]
+[ext_resource type="PackedScene" uid="uid://bkanjd3swqx8s" path="res://recipe_select_menu.tscn" id="10_efxa6"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lquwl"]
+texture = ExtResource("2_1bvp3")
+0:0/size_in_atlas = Vector2i(2, 2)
+0:0/0 = 0
+0:0/0/custom_data_0 = "copper"
+2:0/size_in_atlas = Vector2i(2, 2)
+2:0/0 = 0
+2:0/0/custom_data_0 = "iron"
+2:2/size_in_atlas = Vector2i(2, 2)
+2:2/0 = 0
+2:2/0/custom_data_0 = "gold"
+0:2/size_in_atlas = Vector2i(2, 2)
+0:2/0 = 0
+0:2/0/custom_data_0 = "coal"
+0:4/size_in_atlas = Vector2i(2, 2)
+0:4/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_272bh"]
+texture = ExtResource("3_lquwl")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/custom_data_1 = "up"
+1:0/0 = 0
+1:0/0/custom_data_1 = "left"
+1:1/0 = 0
+1:1/0/custom_data_1 = "right"
+0:1/0 = 0
+0:1/0/custom_data_1 = "down"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vivmo"]
+texture = ExtResource("4_4c57u")
+texture_region_size = Vector2i(32, 32)
+0:0/next_alternative_id = 5
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_v = true
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/transpose = true
+0:0/3 = 3
+0:0/3/transpose = true
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2cqfq"]
+texture = ExtResource("5_efxa6")
+texture_region_size = Vector2i(32, 32)
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_v = true
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/transpose = true
+0:0/3 = 3
+0:0/3/transpose = true
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yaehf"]
+texture = ExtResource("6_dg77c")
+texture_region_size = Vector2i(32, 32)
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_v = true
+0:0/2 = 2
+0:0/2/transpose = true
+0:0/3 = 3
+0:0/3/flip_h = true
+0:0/3/transpose = true
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_074og"]
+texture = ExtResource("7_ycdy4")
+texture_region_size = Vector2i(32, 32)
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_v = true
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/transpose = true
+0:0/3 = 3
+0:0/3/transpose = true
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cegan"]
+texture = ExtResource("8_w48qg")
+texture_region_size = Vector2i(32, 32)
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_v = true
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/transpose = true
+0:0/3 = 3
+0:0/3/transpose = true
+
+[sub_resource type="TileSet" id="TileSet_7mycd"]
+tile_size = Vector2i(32, 32)
+custom_data_layer_0/name = "ore_type"
+custom_data_layer_0/type = 4
+custom_data_layer_1/name = "direction"
+custom_data_layer_1/type = 4
+custom_data_layer_2/name = ""
+custom_data_layer_2/type = 0
+sources/0 = SubResource("TileSetAtlasSource_lquwl")
+sources/1 = SubResource("TileSetAtlasSource_272bh")
+sources/2 = SubResource("TileSetAtlasSource_vivmo")
+sources/3 = SubResource("TileSetAtlasSource_2cqfq")
+sources/4 = SubResource("TileSetAtlasSource_yaehf")
+sources/5 = SubResource("TileSetAtlasSource_074og")
+sources/6 = SubResource("TileSetAtlasSource_cegan")
 
 [node name="main" type="Node2D"]
-
-[node name="TokenContainer" type="Node2D" parent="."]
-
-[node name="OreContainer" type="Node2D" parent="TokenContainer"]
-
-[node name="ItemContainer" type="Node2D" parent="TokenContainer"]
 
 [node name="SimManager" type="Node2D" parent="."]
 script = ExtResource("2_h2yge")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = SubResource("TileSet_7mycd")
+
+[node name="BuildingTileMapLayer" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = SubResource("TileSet_7mycd")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(10, 10)
+script = ExtResource("2_0xm2m")
+
+[node name="RecipeSelectMenu" parent="." instance=ExtResource("10_efxa6")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PanelContainer" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_7mycd")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ConveyorButtonR" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Conveyor Belt Right"
+
+[node name="ConveyorButtonL" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Conveyor Belt Left"
+
+[node name="ConveyorButtonU" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Conveyor Belt Up"
+
+[node name="ConveyorButtonD" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Conveyor Belt Down"
+
+[node name="MinerButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Miner"
+
+[node name="SmelterButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Smelter"
+
+[node name="FoundryButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Foundry"
+
+[node name="ConstructorButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Constructor"
+
+[node name="ManufacturerButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Manufacturer"
