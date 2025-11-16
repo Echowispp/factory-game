@@ -13,11 +13,10 @@ func _init():
 			"coal": 1, 
 		}, 
 		"outputs": {
-			"iron_ingot": 1
+			"iron_ingot": 2, 
+			"slag": 1, 
 		},
-		"time": 2,
-		#"byproduct": "slag", 
-		#"byproduct_rate": 2, 
+		"time": 4,
 	}, 
 	"copper_ingot":{
 		"inputs":{
@@ -25,9 +24,10 @@ func _init():
 			"coal": 1, 
 		}, 
 		"outputs": {
-			"copper_ingot": 1, 
+			"copper_ingot": 2,
+			"slag": 1,  
 		}, 
-		"time": 2, 
+		"time": 4, 
 	}, 
 	};
 	
@@ -47,10 +47,10 @@ func set_active_recipe(recipe: String):
 func _update_io_positions():
 	match ROTATIONS[rotation_index]:
 		"right":
-			output = pos + Vector2i(1, 0);
+			output.append(pos + Vector2i(1, 0))
 		"down":
-			output = pos + Vector2i(0, 1);
+			output.append(pos + Vector2i(0, 1))
 		"left":
-			output = pos + Vector2i(-1, 0);
+			output.append(pos + Vector2i(-1, 0))
 		"up":
-			output = pos + Vector2i(0, -1);
+			output.append(pos + Vector2i(0, -1))

@@ -1,12 +1,13 @@
 # factory-game
 
+##IF YOU SEE THIS WHEN REVIEWING W10, THIS COMMIT IS TOO NEW. Go to the earlier commit, named "the not final commit"
+
 A game about collecting a big pile of gold
 
 CONTROLS: WASD for movement, then you can click the miner button in the top left and place miers down on stuff, that's it pretty much
 
 <a href="https://echowispp.itch.io/2d-factory-game">Itch</a>
 
-So, there's not much to this project, there's basically the code. I don't have time for any more changes really so... yeah. Sorry for few commits and also forgetting to keep up this log or whatever you'd call it. 
 
 tech stack:
 basically, there's the sim_tick function that does everything, most of the code is there just to help it out. The buildings can be rotated, it does nothing without other buildings tho. 
@@ -17,7 +18,7 @@ I will definitely be returning to this project on w11, though.
 
 My attempt at a written devlog:
 	
-A game about optimizing a grid-based factory... I might still go many ways with this game, but we'll see. I'll try to hold a sort-of devlog of how I'm thinking of each thing next on the todo list. In the end though, we'll see how well that goes
+A game about optimizing a grid-based factory..ssssssssssddwdsaaaaasd. I might still go many ways with this game, but we'll see. I'll try to hold a sort-of devlog of how I'm thinking of each thing next on the todo list. In the end though, we'll see how well that goes
 
 Already forgot to do this for a couple commits, but that... will surely be fine. 
 (I just added some parameters I think will be useful for this, might end up adding some, deleting some, we'll see')

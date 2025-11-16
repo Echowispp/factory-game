@@ -42,8 +42,8 @@ signal factory_output
 
 func _ready():
 	_init_building_tile_map()
-	menu_label.position = Vector2(3000, 2000)
-	info_label.position = Vector2(200, 2000)
+	menu_label.global_position = camera.global_position + Vector2(200, 100)
+	info_label.global_position = Vector2(200, 400)
 	factory_output.connect(_on_factory_output)
 
 func _on_factory_output(item_name: String):
@@ -53,34 +53,7 @@ func _on_factory_output(item_name: String):
 	_update_label()
 
 func _update_label():
-	var text = ""
-	for item_name in mined_count.keys():
-		text += "%s: %d\n" % [item_name, mined_count[item_name]]
-	menu_label.text = text
-	if mined_count["gold"] > 1000:
-		menu_label.text = "You won, congratulations!"
-		camera.zoom = Vector2(2, 2)
-
-#func _init_building_tile_map():
-	#var ts: TileSet = building_grid.tile_set
-	#if ts == null:
-		#push_error("No TileSet assigned to BuildingTileMapLayer")
-		#return
-	#
-	#
-	#for source_index in range(ts.get_source_count()):
-		#var source = ts.get_source(source_index)
-		#if source is TileSetAtlasSource:
-			#var tiles_count = source.get_tiles_count()
-			#
-			#for i in range(tiles_count):
-				#var atlas_coords = source.get_tile_id(i)
-				#var tile_data = source.get_tile_data(atlas_coords, 0)
-				#
-				#if tile_data and tile_data.has_custom_data("building_type"):
-					#var building_type = tile_data.get_custom_data("building_type")
-					#if building_type != null and building_type != "":
-						#building_tiles[building_type] = [source_index, atlas_coords, 0]
+	menu_label.text = str(get_global_mouse_position() / 32)
 
 func _process(delta: float):
 	
@@ -98,10 +71,11 @@ func _process(delta: float):
 		tick_timer -= tickrate;
 		_sim_tick();
 	
-	#if Input.is_action_just_pressed("quit_build_mode"):
-		#selected_building = "";
-		#if is_building_ghost:
-			#is_building_ghost = false;
+	if Input.is_action_just_pressed("quit_build_mode"):
+		selected_building = "";
+		if is_building_ghost:
+			is_building_ghost = false;
+		_update_ghost_tile()
 	
 	if not selected_building == "":
 		var mouse_pos = get_global_mouse_position()
@@ -120,11 +94,8 @@ func _process(delta: float):
 		if mouse_cell != ghost_cell:
 			_draw_ghost_tile(mouse_cell)
 
-func _clear_ghost_tile():
-	if not ghost_cell == Vector2i(-1, -1):
-		ghost_grid.erase_cell(ghost_cell)
-		ghost_cell = Vector2i(-1, -1)
-#
+
+
 func _draw_ghost_tile(cell: Vector2i):
 	ghost_grid.clear()
 
@@ -201,12 +172,22 @@ func _move_tokens():
 	for i in range(all_tokens.size() - 1, -1, -1):
 		var token = all_tokens[i];
 		
+		
 		if token.target == Vector2i(-1, -1):
 			continue;
 		
 		if _is_tile_empty(token.target):
 			token.grid_pos = token.target;
+			print(
+				
+			)
+			print(token, token.grid_pos)
 			token.target = _get_next_target(token.grid_pos);
+			
+			var tween = create_tween()
+			tween.tween_property(token, "global_position", grid.map_to_local(token.grid_pos), tickrate)
+			tween.set_ease(Tween.EASE_IN_OUT)
+			tween.set_trans(Tween.TRANS_LINEAR)
 		
 		elif _is_factory_input(token.target):
 			var factory = _get_factory_at_input(token.target)
@@ -227,19 +208,33 @@ func _process_factories():
 			factory.progress -= 1
 			
 			if factory.progress == 0:
-				for item in factory.active_recipe["outputs"]:
-					for i in range(factory.active_recipe["outputs"][item]):
-						factory.output_buffer.append({"item": item})
-						factory_output.emit(item)
+				var output_keys = factory.active_recipe["outputs"].keys()
+				for i in range(output_keys.size()):
+					var item = output_keys[i]
+					var count = factory.active_recipe["outputs"][item]
+					var output_index = i  # First item type → port 0, second → port 1
+					
+					for j in range(count):
+						factory.output_buffer.append({
+							"item": item, 
+							"output_index": output_index
+						})
+						factory_output.emit(item) 
+# basically a super complicated way to say:
+# "if the building outputs two materials, it has two outputs, if it outputs one material you get one output"
 
 func _do_outputs():
 	for factory in all_factories:
 		if factory.output_buffer.is_empty():
 			continue
 		
-		if _is_tile_empty(factory.output):
-			var token_data = factory.output_buffer.pop_front();
-			_spawn_token(token_data.item, factory.output);
+		for i in range(factory.output_buffer.size() - 1, -1, -1):
+			var token_data = factory.output_buffer[i]
+			var output_pos = factory.output[token_data.output_index]
+			
+			if _is_tile_empty(output_pos):
+				factory.output_buffer.remove_at(i)
+				_spawn_token(token_data.item, output_pos)
 
 
 func _is_tile_empty(pos: Vector2i) -> bool:
@@ -264,12 +259,21 @@ func _get_factory_at_input(pos: Vector2i) -> Factory:
 
 func _get_next_target(pos: Vector2i) -> Vector2i:
 	if not grid:
+		print("target (-1, -1), grid not found!")
 		return Vector2i(-1, -1);
-	var tile_data = grid.get_cell_tile_data(pos);
+	var tile_data = building_grid.get_cell_tile_data(pos);
 	if not tile_data:
+		print("target (-1, -1), tile custom data not found at ", pos, "!")
 		return Vector2i(-1, -1);
 	
+	var build_source_id = building_grid.get_cell_source_id(pos)
+	var build_atlas_coords = building_grid.get_cell_atlas_coords(pos)
+	var build_alt_tile = building_grid.get_cell_alternative_tile(pos)
+	print("Tile at ", pos, " - build Source: ", build_source_id, " build Atlas: ", build_atlas_coords, " build Alt: ", build_alt_tile)
+	
 	var direction = tile_data.get_custom_data("direction");
+	
+	print('Direction found: "', direction, '"', 'type: "', typeof(direction), '"')
 	
 	match direction:
 		"right":
@@ -281,6 +285,7 @@ func _get_next_target(pos: Vector2i) -> Vector2i:
 		"down":
 			return pos + Vector2i(0, 1);
 		_:
+			print("target (-1, -1), cardinal direction data not found!")
 			return Vector2i(-1, -1);
 
 func _can_start_recipe(factory: Factory) -> bool:
@@ -288,7 +293,7 @@ func _can_start_recipe(factory: Factory) -> bool:
 		return false;
 	
 	for item_type in factory.active_recipe["inputs"].keys():
-		var required_inputs = factory.active_recipe["inputs"]["item_type"];
+		var required_inputs = factory.active_recipe["inputs"][item_type];
 		var available_inputs = factory.input_buffer.get(item_type, []).size();
 		 
 		if available_inputs < required_inputs:
@@ -341,8 +346,8 @@ func _place_building(cell: Vector2i, building_type: String, rotation_index: int 
 		return
 	
 	building_grid.set_cell(cell, info[0], info[1], rotation_index)
-	_register_building_at(cell, building_type, rotation_index)
-	_clear_ghost_tile()
+	if not building_type == "conveyor_belt":
+		_register_building_at(cell, building_type, rotation_index)
 
 
 func _can_place_at(cell: Vector2i) -> bool:
@@ -385,8 +390,9 @@ func _register_building_at(cell: Vector2i, building_name: String, angle: int):
 			building = Smelter.new()
 		"foundry":
 			building = Foundry.new()
+		
 		_:
-			push_error("Unknown building: %s" % building_name)
+			push_error("Unknown building: ", building_name)
 			return
 	
 	building.pos = cell

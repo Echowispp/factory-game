@@ -24,7 +24,6 @@ func _ready():
 func _conveyor():
 	sim_manager.selected_building = "conveyor_belt";
 	sim_manager.create_building_preview()
-	print("_conveyor called")
 func _miner():
 	sim_manager.selected_building = "miner";
 	sim_manager.create_building_preview()

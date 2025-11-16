@@ -6,12 +6,12 @@ const Z_INDEX: int = 5
 var type: String = ""
 var pos: Vector2i = Vector2i(0, 0)
 var rotation_index: int = 0
-const ROTATIONS = ["right", "down", "left", "up"]
+const ROTATIONS = ["up", "right", "down", "left"]
 
 var max_buffer_size: int = 3
 var input_buffer: Dictionary = {}
 var output_buffer: Array = []
-var output: Vector2i = Vector2i(0, 0)
+var output: Array[Vector2i] = []
 
 var active_recipe: Dictionary = {}
 var active_recipe_name: String = ""
@@ -72,18 +72,18 @@ func _initialize_buffers():
 
 
 func _update_visual_rotation():
-	sprite.rotation_degrees = rotation_index * 90
+	sprite.rotation_degrees = (rotation_index * 90) - 90
 
 func _update_io_positions():
 	match ROTATIONS[rotation_index]:
 		"right":
-			output = pos + Vector2i(1, 0)
+			output.append(pos + Vector2i(1, 0))
 		"down":
-			output = pos + Vector2i(0, 1)
+			output.append(pos + Vector2i(0, 1))
 		"left":
-			output = pos + Vector2i(-1, 0)
+			output.append(pos + Vector2i(-1, 0))
 		"up":
-			output = pos + Vector2i(0, -1)
+			output.append(pos + Vector2i(0, -1))
 
 func get_current_direction() -> String:
 	return ROTATIONS[rotation_index]

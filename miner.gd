@@ -7,7 +7,7 @@ extends Factory;
 func _init():
 	type = "miner";
 	input_count = 0;
-	rotation_index = 0;
+	#rotation_index = 0;
 
 
 func _ready() -> void:
@@ -50,12 +50,15 @@ func _check_mined_tile() -> String:
 	return ""
 	
 func _update_io_positions():
+	
+	output.clear();
+	
 	match ROTATIONS[rotation_index]:
 		"right":
-			output = pos + Vector2i(1, 0);
+			output.append(pos + Vector2i(1, 0))
 		"down":
-			output = pos + Vector2i(0, 1);
+			output.append(pos + Vector2i(0, 1))
 		"left":
-			output = pos + Vector2i(-1, 0);
+			output.append(pos + Vector2i(-1, 0))
 		"up":
-			output = pos + Vector2i(0, -1);
+			output.append(pos + Vector2i(0, -1))

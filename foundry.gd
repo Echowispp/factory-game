@@ -36,10 +36,10 @@ func set_active_recipe(recipe: String):
 func _update_io_positions():
 	match ROTATIONS[rotation_index]:
 		"right":
-			output = pos + Vector2i(1, 0);
+			output.append(pos + Vector2i(1, 0))
 		"down":
-			output = pos + Vector2i(0, 1);
+			output.append(pos + Vector2i(0, 1))
 		"left":
-			output = pos + Vector2i(-1, 0);
+			output.append(pos + Vector2i(-1, 0))
 		"up":
-			output = pos + Vector2i(0, -1);
+			output.append(pos + Vector2i(0, -1))

@@ -40,12 +40,15 @@ texture_region_size = Vector2i(32, 32)
 0:0/1 = 1
 0:0/1/flip_h = true
 0:0/1/transpose = true
+0:0/1/custom_data_1 = "right"
 0:0/1/custom_data_2 = "conveyor_belt"
 0:0/2 = 2
 0:0/2/flip_v = true
+0:0/2/custom_data_1 = "down"
 0:0/2/custom_data_2 = "conveyor_belt"
 0:0/3 = 3
 0:0/3/transpose = true
+0:0/3/custom_data_1 = "left"
 0:0/3/custom_data_2 = "conveyor_belt"
 1:0/0 = 0
 1:0/0/custom_data_1 = "left"
@@ -174,7 +177,7 @@ texture_filter = 1
 tile_set = SubResource("TileSet_7mycd")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(10, 10)
+zoom = Vector2(3, 3)
 script = ExtResource("2_0xm2m")
 
 [node name="RecipeSelectMenu" parent="." instance=ExtResource("10_efxa6")]
@@ -194,7 +197,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="ConveyorButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Conveyor Belt"
@@ -205,25 +207,21 @@ theme_override_font_sizes/font_size = 32
 text = "Miner"
 
 [node name="SmelterButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Smelter"
 
 [node name="FoundryButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Foundry"
 
 [node name="ConstructorButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Constructor"
 
 [node name="ManufacturerButton" type="Button" parent="CanvasLayer/PanelContainer/HBoxContainer"]
-visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Manufacturer"
@@ -232,7 +230,7 @@ text = "Manufacturer"
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 20
 text = "Mined resources will display here
 "
 
@@ -240,7 +238,8 @@ text = "Mined resources will display here
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 32
-text = "Controls: WASD movent, in the top right you can click the miner button. After clicking it, you can place miners around the place!
+theme_override_font_sizes/font_size = 20
+text = "Controls: WASD movent, in the top right you can click the miner button. 
+After clicking it, you can place miners around the place!
 
 Try to get 1000 gold!"
