@@ -37,11 +37,11 @@ func _update_sprite():
 
 func _get_item_color() -> Color:
 	match item:
-		"iron":
+		"iron_ore":
 			return Color("#964");
-		"coal":
+		"coal_ore":
 			return Color("#222");
-		"copper":
+		"copper_ore":
 			return Color("#c83");
 		"iron_ingot":
 			return Color("#bbb");

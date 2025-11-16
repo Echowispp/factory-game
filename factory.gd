@@ -25,27 +25,6 @@ var progress_bar: ProgressBar
 
 func _ready():
 	z_index = Z_INDEX
-	sprite = Sprite2D.new()
-	sprite.centered = true
-	add_child(sprite)
-	
-	_load_sprite()
-	_setup_progress_bar()
-	_initialize_buffers()
-
-func _load_sprite():
-	if type == "":
-		push_warning("Factory type not set, ERROR loading texture!")
-		sprite.texture = PlaceholderTexture2D.new()
-		return
-	
-	var sprite_path = "res://sprites/factories/%s.png" % type
-	
-	if ResourceLoader.exists(sprite_path):
-		sprite.texture = load(sprite_path)
-	else:
-		push_warning("Sprite not found: %s" % sprite_path)
-		sprite.texture = PlaceholderTexture2D.new()
 
 func _setup_progress_bar():
 	progress_bar = ProgressBar.new()
@@ -94,51 +73,52 @@ func get_inputs() -> Array:
 	var inputs = []
 	var direction = ROTATIONS[rotation_index]
 	
+	
 	match input_count:
 		0:
 			return []
 		1:
 			match direction:
 				"right":
-					inputs.append(pos + Vector2i(-1, 0))
+					inputs.append(pos + Vector2i(-1, 0))  # left (opposite)
 				"down":
-					inputs.append(pos + Vector2i(0, -1))
+					inputs.append(pos + Vector2i(0, -1))  # up (opposite)
 				"left":
-					inputs.append(pos + Vector2i(1, 0))
+					inputs.append(pos + Vector2i(1, 0))   # right (opposite)
 				"up":
-					inputs.append(pos + Vector2i(0, 1))
+					inputs.append(pos + Vector2i(0, 1))   # down (opposite)
 		2:
 			match direction:
 				"right":
-					inputs.append(pos + Vector2i(0, -1))
-					inputs.append(pos + Vector2i(0, 1))
+					inputs.append(pos + Vector2i(-1, 0))  # left (opposite)
+					inputs.append(pos + Vector2i(0, -1))  # up (90° CCW from right)
 				"down":
-					inputs.append(pos + Vector2i(-1, 0))
-					inputs.append(pos + Vector2i(1, 0))
+					inputs.append(pos + Vector2i(0, -1))  # up (opposite)
+					inputs.append(pos + Vector2i(-1, 0))  # left (90° CCW from down)
 				"left":
-					inputs.append(pos + Vector2i(0, -1))
-					inputs.append(pos + Vector2i(0, 1))
+					inputs.append(pos + Vector2i(1, 0))   # right (opposite)
+					inputs.append(pos + Vector2i(0, 1))   # down (90° CCW from left)
 				"up":
-					inputs.append(pos + Vector2i(-1, 0))
-					inputs.append(pos + Vector2i(1, 0))
+					inputs.append(pos + Vector2i(0, 1))   # down (opposite)
+					inputs.append(pos + Vector2i(1, 0))   # right (90° CCW from up)
 		3:
 			match direction:
 				"right":
-					inputs.append(pos + Vector2i(-1, 0))
-					inputs.append(pos + Vector2i(0, -1))
-					inputs.append(pos + Vector2i(0, 1))
+					inputs.append(pos + Vector2i(-1, 0))  # left (opposite)
+					inputs.append(pos + Vector2i(0, -1))  # up
+					inputs.append(pos + Vector2i(0, 1))   # down
 				"down":
-					inputs.append(pos + Vector2i(-1, 0))
-					inputs.append(pos + Vector2i(0, -1))
-					inputs.append(pos + Vector2i(1, 0))
+					inputs.append(pos + Vector2i(0, -1))  # up (opposite)
+					inputs.append(pos + Vector2i(-1, 0))  # left
+					inputs.append(pos + Vector2i(1, 0))   # right
 				"left":
-					inputs.append(pos + Vector2i(1, 0))
-					inputs.append(pos + Vector2i(0, -1))
-					inputs.append(pos + Vector2i(0, 1))
+					inputs.append(pos + Vector2i(1, 0))   # right (opposite)
+					inputs.append(pos + Vector2i(0, -1))  # up
+					inputs.append(pos + Vector2i(0, 1))   # down
 				"up":
-					inputs.append(pos + Vector2i(-1, 0))
-					inputs.append(pos + Vector2i(0, 1))
-					inputs.append(pos + Vector2i(1, 0))
+					inputs.append(pos + Vector2i(0, 1))   # down (opposite)
+					inputs.append(pos + Vector2i(-1, 0))  # left
+					inputs.append(pos + Vector2i(1, 0))   # right
 	
 	return inputs
 

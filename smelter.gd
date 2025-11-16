@@ -5,12 +5,14 @@ extends Factory;
 
 func _init():
 	type = "smelter";
-	input_count = 0;
+	input_count = 2;
+	print("Smelter at ", pos, " has inputs: ", get_inputs())
+
 	rotation_index = 0;
 	recipe_cont = {"iron_ingot":{
 		"inputs":{
 			"iron_ore": 2, 
-			"coal": 1, 
+			"coal_ore": 1, 
 		}, 
 		"outputs": {
 			"iron_ingot": 2, 
@@ -36,6 +38,7 @@ func _init():
 
 func _ready() -> void:
 	super._ready();
+	input_count = 2;
 
 func set_active_recipe(recipe: String):
 	if not recipe_cont.has(recipe):

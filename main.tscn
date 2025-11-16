@@ -16,16 +16,16 @@
 texture = ExtResource("2_1bvp3")
 0:0/size_in_atlas = Vector2i(2, 2)
 0:0/0 = 0
-0:0/0/custom_data_0 = "copper"
+0:0/0/custom_data_0 = "copper_ore"
 2:0/size_in_atlas = Vector2i(2, 2)
 2:0/0 = 0
-2:0/0/custom_data_0 = "iron"
+2:0/0/custom_data_0 = "iron_ore"
 2:2/size_in_atlas = Vector2i(2, 2)
 2:2/0 = 0
-2:2/0/custom_data_0 = "gold"
+2:2/0/custom_data_0 = "gold_ore"
 0:2/size_in_atlas = Vector2i(2, 2)
 0:2/0 = 0
-0:2/0/custom_data_0 = "coal"
+0:2/0/custom_data_0 = "coal_ore"
 0:4/size_in_atlas = Vector2i(2, 2)
 0:4/0 = 0
 0:4/0/custom_data_0 = "stone"
@@ -243,3 +243,9 @@ text = "Controls: WASD movent, in the top right you can click the miner button.
 After clicking it, you can place miners around the place!
 
 Try to get 1000 gold!"
+
+[node name="Button" type="Button" parent="CanvasLayer/PanelContainer"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "close controls"

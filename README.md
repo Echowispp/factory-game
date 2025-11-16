@@ -17,8 +17,8 @@ Then, I pretty much hopped around doing a line there, a line there and that for 
 I will definitely be returning to this project on w11, though. 
 
 My attempt at a written devlog:
-	
-A game about optimizing a grid-based factory..ssssssssssddwdsaaaaasd. I might still go many ways with this game, but we'll see. I'll try to hold a sort-of devlog of how I'm thinking of each thing next on the todo list. In the end though, we'll see how well that goes
+
+A game about optimizing a grid-based factory... I might still go many ways with this game, but we'll see. I'll try to hold a sort-of devlog of how I'm thinking of each thing next on the todo list. In the end though, we'll see how well that goes
 
 Already forgot to do this for a couple commits, but that... will surely be fine. 
 (I just added some parameters I think will be useful for this, might end up adding some, deleting some, we'll see')
