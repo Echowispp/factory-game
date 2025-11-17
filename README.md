@@ -1,13 +1,26 @@
-# factory-game
+# Space Colony Factory Game
 
-##IF YOU SEE THIS WHEN REVIEWING W10, THIS COMMIT IS TOO NEW. Go to the earlier commit, named "the not final commit"
+##IF YOU SEE THIS WHEN REVIEWING W11, THIS COMMIT IS TOO NEW. Go to the earlier commit, named "the not final commit"
 
-A game about collecting a big pile of gold
-
-CONTROLS: WASD for movement, then you can click the miner button in the top left and place miers down on stuff, that's it pretty much
+This a game where you build factories on a space colony
+The goal of the game is to make a computer
 
 <a href="https://echowispp.itch.io/2d-factory-game">Itch</a>
 
+Controls: 
+WASD movement
+Click on a building at the top to select it, then click on the map to place it there! 
+345 adjust zoom 
+While hovering on a building, you can press 1 or 2 to change recipes, 1 is the recipe on the top of the building's recipe book and 2 is the one one the bottom
+
+tech stack for this week is just and only that I fixed a bunch of bugs, though I will further elaborate what I think is the most interesting part of the game, which is the recipe system. It's pretty simple, too. It's just basic dictionary stuff. There's inputs, outputs and a process time. If there are enough inputs, the timer will start and when done. the outputs are put on the building output (miner has blank inputs, so it skips the input check). That's it. I'm absolutely fascinated by how simple dictionaries are, when I first thought of this project I thoguth the recipes would be the hardest part, but the real hardest part was moving stuff on conveyors. (I'm new to coding and only really used dictionaries once before, so this was a pleasant experience). I kinda forgot that last week. The rest of the systems are the opposite - pretty simple on paper, but they are the harder ones in reality. There might be an easier way to do them, though. This is just the way I used, which was difficult. 
+
+## W11 STUFF BELOW
+this is here mainly for easier comparison, the whole part is unmodified from the time it was first submitted
+
+A game about collecting a big pile of gold
+
+CONTROLS: WASD for movement, then you can click a button in the top left and place buildings down on stuff, that's it pretty much
 
 tech stack:
 basically, there's the sim_tick function that does everything, most of the code is there just to help it out. The buildings can be rotated, it does nothing without other buildings tho. 

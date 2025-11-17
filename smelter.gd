@@ -6,7 +6,6 @@ extends Factory;
 func _init():
 	type = "smelter";
 	input_count = 2;
-	print("Smelter at ", pos, " has inputs: ", get_inputs())
 
 	rotation_index = 0;
 	recipe_cont = {"iron_ingot":{
@@ -16,7 +15,7 @@ func _init():
 		}, 
 		"outputs": {
 			"iron_ingot": 2, 
-			"slag": 1, 
+			#"slag": 1, 
 		},
 		"time": 4,
 	}, 
@@ -27,7 +26,7 @@ func _init():
 		}, 
 		"outputs": {
 			"copper_ingot": 2,
-			"slag": 1,  
+			#"slag": 1,  
 		}, 
 		"time": 4, 
 	}, 
@@ -45,15 +44,3 @@ func set_active_recipe(recipe: String):
 		return;
 	active_recipe_name = recipe;
 	active_recipe = recipe_cont[recipe];
-
-
-func _update_io_positions():
-	match ROTATIONS[rotation_index]:
-		"right":
-			output.append(pos + Vector2i(1, 0))
-		"down":
-			output.append(pos + Vector2i(0, 1))
-		"left":
-			output.append(pos + Vector2i(-1, 0))
-		"up":
-			output.append(pos + Vector2i(0, -1))

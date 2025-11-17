@@ -7,7 +7,6 @@ extends Factory;
 func _init():
 	type = "miner";
 	input_count = 0;
-	#rotation_index = 0;
 
 
 func _ready() -> void:

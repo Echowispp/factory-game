@@ -20,9 +20,9 @@ func _physics_process(_delta: float):
 		velocity = velocity.normalized() * speed;
 		position += velocity
 	
-	#if Input.is_action_just_pressed("zoom1"):
-		#zoom = Vector2(5, 5);
-	#if Input.is_action_just_pressed("zoom2"):
-		#zoom = Vector2(2, 2);
-	#if Input.is_action_just_pressed("zoom3"):
-		#zoom = Vector2(1, 1);
+	if Input.is_action_just_pressed("zoom1"):
+		zoom = Vector2(5, 5);
+	if Input.is_action_just_pressed("zoom2"):
+		zoom = Vector2(2, 2);
+	if Input.is_action_just_pressed("zoom3"):
+		zoom = Vector2(1, 1);

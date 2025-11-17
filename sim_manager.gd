@@ -2,7 +2,6 @@ extends Node2D
 
 @onready var camera = $"../Camera2D"
 @onready var info_label = $"../CanvasLayer/PanelContainer/InfoLabel"
-@onready var menu_label = $"../CanvasLayer/PanelContainer/Label"
 @onready var recipe_menu = $"../RecipeSelectMenu"
 @onready var grid: TileMapLayer = $"../TileMapLayer"
 @onready var building_grid = $"../BuildingTileMapLayer"
@@ -13,7 +12,6 @@ var all_factories: Array[Factory] = [];
 
 const ROTATIONS = ["right", "down", "left", "up"]
 
-var paused:bool = false;
 var selected_building : String = "";
 var is_building_ghost: bool = false;
 
@@ -24,19 +22,18 @@ var building_tiles := {
 	"manufacturer": [4, Vector2i(0, 0), 0], 
 	"miner": [5, Vector2i(0, 0), 0],
 	"smelter": [6, Vector2i(0, 0), 0],
+	"trash": [7, Vector2i(0, 0), 0],
 };
 
-var mined_count: Dictionary = {}
 
 var ghost_tile_source_id: int = -1
 var ghost_tile_coords: Vector2i = Vector2i.ZERO
 var ghost_rotation: int = 0
 var ghost_cell: Vector2i = Vector2i(-1, -1)
 
-var tickrate: float = 8.0;
+var tickrate: float = 1.0;
 var tick_timer = 0.0;
-
-var debug_timer: float = 0.0
+var paused: bool = false
 
 signal factory_started
 signal token_consumed
@@ -44,23 +41,10 @@ signal factory_output
 
 func _ready():
 	_init_building_tile_map()
-	menu_label.global_position = camera.global_position + Vector2(200, 100)
-	info_label.global_position = Vector2(200, 400)
-	factory_output.connect(_on_factory_output)
-
-func _on_factory_output(item_name: String):
-	if not mined_count.has(item_name):
-		mined_count[item_name] = 0
-	mined_count[item_name] += 1
-	_update_label()
-
-func _update_label():
-	menu_label.text = str(debug_timer)
+	info_label.global_position = Vector2(0, 50)
 
 func _process(delta: float):
 	
-	debug_timer += delta
-	_update_label()
 	
 	if Input.is_action_just_pressed("toggle_pause"):
 		if not paused:
@@ -101,15 +85,15 @@ func _process(delta: float):
 
 func _draw_ghost_tile(cell: Vector2i):
 	ghost_grid.clear()
-
+	
 	var info = building_tiles.get(selected_building)
 	if info == null:
 		push_warning("No tile for building: %s" % selected_building)
 		return
-
+	
 	var can_place = _can_place_at(cell)
 	var color = Color(1, 1, 1, 0.4) if can_place == true else Color(1, 0.2, 0.2, 0.4)
-
+	
 	ghost_grid.set_cell(cell, info["source_id"], info["atlas_coords"])
 	ghost_grid.modulate = color
 
@@ -119,13 +103,13 @@ func _init_building_tile_map():
 	if ts == null:
 		push_error("No TileSet assigned to BuildingTileMapLayer")
 		return
-
+	
 	building_tiles.clear()
-
+	
 	for source_id in range(ts.get_source_count()):
 		var source = ts.get_source(source_id)
 		if source is TileSetAtlasSource:
-
+		
 			var atlas_coords = Vector2i(0, 0)
 			var tile_data = source.get_tile_data(atlas_coords, 0)
 			
@@ -154,14 +138,10 @@ func _update_ghost_tile():
 	ghost_grid.modulate = Color(1, 1, 1, 0.5) if can_place else Color(1, 0.3, 0.3, 0.5)
 
 func _sim_tick():
-	print(
-		
-	)
-	print("New Tick!")
+
 	_move_tokens();
 	_process_factories();
 	_do_outputs();
-	_move_tokens();
 
 
 func _register_token(token: Token):
@@ -180,11 +160,9 @@ func _move_tokens():
 	for i in range(all_tokens.size() - 1, -1, -1):
 		var token = all_tokens[i];
 		
-		print("Token: ", token.item)
-		
 		if token.target == Vector2i(-1, -1):
-			continue;
-		
+			token.target = _get_next_target(token.grid_pos)
+			continue
 		
 		if _is_tile_empty(token.target):
 			token.grid_pos = token.target;
@@ -198,13 +176,11 @@ func _move_tokens():
 			
 		elif _is_factory_input(token.target):
 			
-			print("Token ", token.item, " reached factory input at ", token.target)
 			
 			var factory = _get_factory_at_input(token.target)
 			
 			if factory and factory.accepts_item(token.item) and factory.has_space_for_item(token.item):
 				
-				print("  CONSUMING TOKEN!")
 				
 				token.grid_pos = token.target
 				token.global_position = grid.map_to_local(token.grid_pos)
@@ -212,51 +188,51 @@ func _move_tokens():
 				if not factory.input_buffer.has(token.item):
 					factory.input_buffer[token.item] = []
 				factory.input_buffer[token.item].append({"item": token.item})
-				print("  Added to buffer, buffer now: ", factory.input_buffer[token.item])
 				_remove_token(token)
-				print("  Removed from all_tokens, count now: ", all_tokens.size())
 				token.queue_free()
-				print("  Token queued for deletion")
 				token_consumed.emit(token, factory)
 
 func _process_factories():
 	for factory in all_factories:
-		if factory.progress == 0:
-			if _can_start_recipe(factory):
-				_consume_inputs(factory);
-				factory.progress = factory.active_recipe["time"];
-				factory_started.emit(factory)
+		if factory.type == "trash":
+			factory.input_buffer.clear()
+			continue
+		
+		if factory.progress == 0 and _can_start_recipe(factory):
+			_consume_inputs(factory)
+			factory.progress = factory.active_recipe["time"]
+			factory_started.emit(factory)
+		
 		if factory.progress > 0:
 			factory.progress -= 1
 			
 			if factory.progress == 0:
-				var output_keys = factory.active_recipe["outputs"].keys()
-				for i in range(output_keys.size()):
-					var item = output_keys[i]
-					var count = factory.active_recipe["outputs"][item]
-					var output_index = i  # First item type → port 0, second → port 1
+				var outputs = factory.active_recipe["outputs"]
+				
+				for item in outputs.keys():
+					var count = outputs[item]
+					var port = 0
 					
 					for j in range(count):
 						factory.output_buffer.append({
-							"item": item, 
-							"output_index": output_index
+							"item": item,
+							"output_index": port
 						})
-						factory_output.emit(item) 
+						factory_output.emit(item)
 # basically a super complicated way to say:
 # "if the building outputs two materials, it has two outputs, if it outputs one material you get one output"
 
 func _do_outputs():
 	for factory in all_factories:
-		if factory.output_buffer.is_empty():
-			continue
-		
-		for i in range(factory.output_buffer.size() - 1, -1, -1):
-			var token_data = factory.output_buffer[i]
+		while not factory.output_buffer.is_empty():
+			var token_data = factory.output_buffer[0]
 			var output_pos = factory.output[token_data.output_index]
 			
 			if _is_tile_empty(output_pos):
-				factory.output_buffer.remove_at(i)
+				factory.output_buffer.remove_at(0)
 				_spawn_token(token_data.item, output_pos)
+			else:
+				break
 
 
 func _is_tile_empty(pos: Vector2i) -> bool:
@@ -305,18 +281,19 @@ func _get_next_target(pos: Vector2i) -> Vector2i:
 
 func _can_start_recipe(factory: Factory) -> bool:
 	if not factory.active_recipe or factory.active_recipe.is_empty():
-		return false;
+		return false
+	
+	if factory.output_buffer.size() >= factory.max_buffer_size:
+		return false
 	
 	for item_type in factory.active_recipe["inputs"].keys():
-		var required_inputs = factory.active_recipe["inputs"][item_type];
-		var available_inputs = factory.input_buffer.get(item_type, []).size();
+		var required_inputs = factory.active_recipe["inputs"][item_type]
+		var available_inputs = factory.input_buffer.get(item_type, []).size()
 		 
 		if available_inputs < required_inputs:
 			return false
-		
-		if factory.output_buffer.size() >= factory.max_buffer_size:
-			return false;
-	return true;
+	
+	return true
 
 func _consume_inputs(factory: Factory):
 	for item in factory.active_recipe["inputs"].keys():
@@ -329,11 +306,11 @@ func _spawn_token(item: String, pos: Vector2i) -> Token:
 	var token = Token.new(item, pos)
 	token.target = _get_next_target(pos)
 	
+	if token.target == Vector2i(-1, -1):
+		token.needs_conveyor_check = true  
+	
 	if grid:
 		token.global_position = grid.map_to_local(pos)
-	
-	else:
-		push_warning("ERROR TileMapLayer not found, token may be in the wrong position")
 	
 	_register_token(token)
 	add_child(token)
@@ -352,6 +329,18 @@ func _unhandled_input(event: InputEvent):
 		var factory = _get_factory_at_cell(cell)
 		if factory and factory.recipe_cont.size() > 1:
 			recipe_menu.open_for_building(factory)
+	if event is InputEventKey and event.pressed:
+		var mouse_pos = get_global_mouse_position()
+		var cell = grid.local_to_map(grid.to_local(mouse_pos))
+		var factory = _get_factory_at_cell(cell)
+		
+		if factory and factory.recipe_cont.size() > 1:
+			var recipe_names = factory.recipe_cont.keys()
+			
+			if event.keycode == KEY_1 and recipe_names.size() > 0:
+				factory.set_active_recipe(recipe_names[0])
+			elif event.keycode == KEY_2 and recipe_names.size() > 1:
+				factory.set_active_recipe(recipe_names[1])
 
 
 func _place_building(cell: Vector2i, building_type: String, rotation_index: int = 0):
@@ -404,7 +393,14 @@ func _register_building_at(cell: Vector2i, building_name: String, angle: int):
 			building = Smelter.new()
 		"foundry":
 			building = Foundry.new()
-		
+		"trash":
+			building = Trash.new()
+		"constructor":
+			building = Constructor.new()
+		"manufacturer":
+			building = Manufacturer.new()
+		"foundry":
+			building = Foundry.new()
 		_:
 			push_error("Unknown building: ", building_name)
 			return
@@ -418,25 +414,3 @@ func _register_building_at(cell: Vector2i, building_name: String, angle: int):
 	building._update_io_positions()
 	
 	_register_factory(building)
-
-
-#func _get_tile_building_type(building_name: String) -> int:
-	#var ts: TileSet = building_grid.tile_set
-	#if not ts:
-		#push_error("No TileSet found")
-		#return -1
-#
-	#for source_index in range(ts.get_source_count()):
-		#var source = ts.get_source(source_index)
-		#if source is TileSetAtlasSource:
-			#var tile_count = source.get_tiles_count()
-			#for tile_index in range(tile_count):
-				#var atlas_coords = source.get_tile_id(tile_index)
-				#var tile_data = source.get_tile_data(atlas_coords, 0)
-				#
-				#if tile_data and tile_data.has_custom_data("building_type"):
-					#var found_name = tile_data.get_custom_data("building_type")
-					#if found_name == building_name:
-						#return ts.get_tile_id(source_index, atlas_coords)
-#
-	#return -1

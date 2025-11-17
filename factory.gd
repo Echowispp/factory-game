@@ -13,6 +13,8 @@ var input_buffer: Dictionary = {}
 var output_buffer: Array = []
 var output: Array[Vector2i] = []
 
+signal recipe_change
+
 var active_recipe: Dictionary = {}
 var active_recipe_name: String = ""
 var recipe_cont: Dictionary = {}
@@ -54,6 +56,8 @@ func _update_visual_rotation():
 	sprite.rotation_degrees = (rotation_index * 90) - 90
 
 func _update_io_positions():
+	output.clear()
+	
 	match ROTATIONS[rotation_index]:
 		"right":
 			output.append(pos + Vector2i(1, 0))
@@ -132,6 +136,8 @@ func set_active_recipe(recipe_name: String):
 	active_recipe_name = recipe_name
 	active_recipe = recipe_cont[recipe_name]
 	_initialize_buffers()
+	
+	recipe_change.emit()
 
 
 
